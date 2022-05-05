@@ -1,0 +1,33 @@
+name: Workflow Dispatch
+description: Trigger a GitHub Actions workflow run
+inputs:
+  repository:
+    description: "The repository and owner in which to trigger the workflow, e.g. octocat/hello-world"
+    required: true
+  workflow:
+    description: "Either the name of the workflow file or its ID"
+    required: true
+  body:
+    description: "The request body as YAML, must contain 'ref' and 'inputs' keys"
+    required: true
+  service-account-token:
+    description: "A personal access token with 'repo' scope. Note: GITHUB_TOKEN cannot be used here"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      env:
+        SERVICE_ACCOUNT_TOKEN: ${{ inputs.service-account-token }}
+        REPOSITORY: ${{ inputs.repository }}
+        WORKFLOW: ${{ inputs.workflow }}
+        BODY: ${{ inputs.body }}
+      # language=bash
+      run: |
+        JSON_BODY=$(echo "$BODY" | yq -o=json -M . | jq -M -c)
+        curl \
+        -X POST \
+        -H "Authorization: token ${SERVICE_ACCOUNT_TOKEN}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        "https://api.github.com/repos/${REPOSITORY}/actions/workflows/${WORKFLOW}/dispatches" \
+        -d "${JSON_BODY}"

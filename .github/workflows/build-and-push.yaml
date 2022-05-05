@@ -64,3 +64,25 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # e.g. docker tag: ghcr.io/joebloggs/repo:sha-b3c34f1 => sha-b3c34f1
+      - name: extract-image-tag
+        id: extract-image-tag
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        # language=bash
+        run: |
+          echo ::set-output name=tag::${TAGS##*:}
+
+      - name: update-image-tag
+        uses: ./.github/actions/workflow-dispatch
+        continue-on-error: true
+        with:
+          repository: jon-ruckwood/devoxx-2022-infrastructure
+          workflow: update-image-tag.yaml
+          # language=yaml
+          body: |
+            ref: main
+            inputs:
+              image-tag: ${{ steps.extract-image-tag.outputs.tag }}
+          service-account-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
