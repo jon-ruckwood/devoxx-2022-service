@@ -1,4 +1,4 @@
-# devoxx-2022-service-repo
+# devoxx-2022-service
 
 Demonstrating workflows for a repository.
 
@@ -18,12 +18,12 @@ mvn verify
 Package
 
 ```shell
-docker build . -t devoxx-2022-service-repo:latest
+docker build . -t devoxx-2022-service:latest
 ```
 
 Run
 ```shell
-docker run --rm -p 7000:7000 devoxx-2022-service-repo:latest
+docker run --rm -p 7000:7000 devoxx-2022-service:latest
 ```
 
 Invoke
