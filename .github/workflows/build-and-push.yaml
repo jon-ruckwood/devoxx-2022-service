@@ -86,3 +86,8 @@ jobs:
             inputs:
               image-tag: ${{ steps.extract-image-tag.outputs.tag }}
           service-account-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Add summary
+        env:
+          IMAGE_TAG: ${{ steps.extract-image-tag.outputs.tag }}
+        run: echo "Deploying \`${IMAGE_TAG}\` :shipit:" >> $GITHUB_STEP_SUMMARY
